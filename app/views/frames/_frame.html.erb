@@ -1,0 +1,19 @@
+<div class="frame">
+    <%- if frame == @current_frame -%>
+        <% form_for @current_frame do |f| %>
+            <div class="tries">
+                <%= text_field_tag 'frame[tries][0]', @current_frame.first %>
+                <%= text_field_tag 'frame[tries][1]', @current_frame.second %>
+            </div>
+            <%= f.submit 'next' %>
+        <% end %>
+    <%- else -%>
+        <div class="tries">
+            <div><%= frame.first %></div>
+            <div><%= frame.second %></div>
+        </div>
+    <%- end -%>
+    <div class="score">
+        <%= frame.score %>
+    </div>
+</div>
