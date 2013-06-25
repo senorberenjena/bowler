@@ -54,7 +54,7 @@ describe 'frames/_frame.html.erb' do
             render :locals => {:frame => @frame}
 
             response.should have_tag 'form[method=?][action=?]',
-                'post', frame_path(@frame) do
+                'post', game_frame_path(game, @frame) do
                 with_tag 'div[class=?]', 'tries' do
                     with_tag 'input[type=?][name=?][id=?][value=?]',
                         'text', 'frame[tries][0]', 'frame_tries_0', @frame.first

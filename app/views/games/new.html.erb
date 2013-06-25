@@ -3,7 +3,8 @@
         <%= f.text_field :title %>
 
     <div id="players">
-        <%= render :partial => 'edit_player', :locals => {:form => f}, :object => Player.new %>
+        <%= render :partial => 'edit_player', :locals => {:form => f}, :collection => @game.players %>
+        <%= render :partial => 'edit_player', :locals => {:form => f} %>
     </div>
 
     <%= f.submit 'Start Game' %>

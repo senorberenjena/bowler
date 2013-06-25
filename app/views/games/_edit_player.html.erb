@@ -4,7 +4,7 @@ Nicht sicher, ob child-index-Zeug klappt. laut rspec erstmal nicht. Ist wahrsche
 %>
 
 <%- form.fields_for :players, edit_player, :child_index => (
-        edit_player.new_record? ? "index_to_replace_with_js" : nil
+        edit_player.nil? ? "index_to_replace_with_js" : nil
     ) do |player_form| -%>
 
     <%= player_form.label :name, 'Player X' %>:
