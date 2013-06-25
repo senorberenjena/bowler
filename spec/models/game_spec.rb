@@ -19,21 +19,15 @@ describe Game do
         Game.new.should_not be_valid
     end
 
-    it "can be associated with Players" do
-        pending
-        game = Factory(:game)
-        expect {
-            game.players << Factory(:player, :name => 'Walter', :game => game)
-            game.players << Factory(:player, :name => 'Dude', :game => game)
-        }.to change { game.players.count }.from(0).to(2)
-
-        #game.should have(2).players
+    it "can mass_assign associated Player objects" do
+        game_attrs = FactoryGirl.attributes_for(:game)
+        game_attrs[:players_attributes] =
+            [ {:name => 'Dude'}, {:name => 'Donny'} ]
+        new_game = Game.new(game_attrs)
+        new_game.should have(2).players
     end
 
-    it "can mass_assign associated Player objects"
-
     it "has the associated players sorted by their names" do
-        pending
         game = Factory(:game)
         game.players << Factory(:player, :name => 'Walter', :game => game)
         game.players << Factory(:player, :name => 'Dude', :game => game)

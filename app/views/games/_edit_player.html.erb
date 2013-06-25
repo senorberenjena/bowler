@@ -1,12 +1,9 @@
-<%#
-Geklaut von http://apidock.com/rails/ActionView/Helpers/FormHelper/fields_for#512-Setting-child-index-while-using-nested-attributes-mass-assignment
-Nicht sicher, ob child-index-Zeug klappt. laut rspec erstmal nicht. Ist wahrscheinlich Rails 3 Feature.
-%>
-
+<%# Geklaut von http://apidock.com/rails/ActionView/Helpers/FormHelper/fields_for#512-Setting-child-index-while-using-nested-attributes-mass-assignment %>
+<p>
 <%- form.fields_for :players, edit_player, :child_index => (
         edit_player.nil? ? "index_to_replace_with_js" : nil
     ) do |player_form| -%>
 
-    <%= player_form.label :name, 'Player X' %>:
-        <%= player_form.text_field :name %>
+    <%= player_form.label :name, 'Player X' %>: <%= player_form.text_field :name %>
 <%- end -%>
+</p>
