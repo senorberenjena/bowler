@@ -62,6 +62,24 @@ describe GamesController do
             post :create, :game => { 'title' => 'Go ahead Donny!' }
         end
 
+        context 'when it should add a new player input field' do
+            it 'assigns @game' do
+                post :create, :add_player => 'Buttonbeschriftung'
+                assigns[:game].should == game
+            end
+
+            it 'renders the new template' do
+                post :create, :add_player => 'Buttonbeschriftung'
+                response.should render_template('new')
+            end
+
+            it 'does not save the game' do
+                game.should_not_receive(:save)
+                post :create, :add_player => 'Buttonbeschriftung'
+            end
+
+        end
+
         context 'when the Game gets saved successfully' do
             before do
                 game.stub(:save).and_return(true)
@@ -69,11 +87,11 @@ describe GamesController do
 
             it 'saves the Game' do
                 game.should_receive(:save).and_return(true)
-                post :create
+                post :create, :commit => 'Dings'
             end
 
             it 'redirects to Frames new page' do
-                post :create
+                post :create, :commit => 'Dings'
                 response.should redirect_to(new_game_frame_path(game))
             end
         end

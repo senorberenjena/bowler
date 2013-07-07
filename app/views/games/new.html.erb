@@ -1,10 +1,12 @@
 <% form_for @game do |f| %>
+    <%= f.error_messages %>
     <p>
         <%= f.label :title, 'Titel' %>: <%= f.text_field :title %>
     </p>
     <div id="players">
         <%= render :partial => 'edit_player', :locals => {:form => f}, :collection => @game.players %>
         <%= render :partial => 'edit_player', :locals => {:form => f}, :object => Player.new %>
+        <%= f.submit 'Add Player', :name => 'add_player' %>
     </div>
 
     <%= f.submit 'Start Game' %>
