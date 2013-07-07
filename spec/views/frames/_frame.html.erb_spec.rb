@@ -48,6 +48,8 @@ describe 'frames/_frame.html.erb' do
             @frame = current_frame
             @frame.stub(:first => 0)
             @frame.stub(:second => 5)
+            @frame.stub(:player_id => 42)
+            @frame.stub(:round => 2)
         end
 
         it 'renders an input form for its 2 possible tries' do
@@ -57,12 +59,14 @@ describe 'frames/_frame.html.erb' do
                 'post', game_frame_path(game, @frame) do
                 with_tag 'div[class=?]', 'tries' do
                     with_tag 'input[type=?][name=?][id=?][value=?]',
-                        'text', 'frame[tries][0]', 'frame_tries_0', @frame.first
+                        'text', 'frame[first]', 'frame_first', @frame.first
                     with_tag 'input[type=?][name=?][id=?][value=?]',
-                        'text', 'frame[tries][1]', 'frame_tries_1', @frame.second
+                        'text', 'frame[second]', 'frame_second', @frame.second
                 end
             end
         end
+
+        it 'renders 3 inputs for its tries, when it\'s a strike or spare in 10th round'
 
         it 'renders an submit button' do
             render :locals => {:frame => @frame}
@@ -70,6 +74,19 @@ describe 'frames/_frame.html.erb' do
             response.should have_tag 'input[type=?]', 'submit'
         end
 
+        it 'renders an hidden field for the Player of the @current_frame' do
+            render :locals => {:frame => @frame}
+
+            response.should have_tag 'input[type=?][name=?][id=?][value=?]',
+                'hidden', 'frame[player_id]', 'frame_player_id', @frame.player_id
+        end
+
+        it 'renders an hidden field for the round of the @current_frame' do
+            render :locals => {:frame => @frame}
+
+            response.should have_tag 'input[type=?][name=?][id=?][value=?]',
+                'hidden', 'frame[round]', 'frame_round', @frame.round
+        end
     end
 
     it 'renders a field for the current score of the frame' do

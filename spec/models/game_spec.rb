@@ -146,21 +146,54 @@ describe Game do
                 game.stub(:next_player => game.players.first)
             end
 
-            it 'returns a new Frame by calling #next_player.add_frame' do
+            it 'returns a new Frame by calling #next_player.add_next_frame' do
                 expected_next_player = game.players.first
                 game.should_receive(:next_player).and_return(
                     expected_next_player
                 )
                 expected_next_frame = mock('NextFrame')
-                expected_next_player.should_receive(:add_frame).and_return(
+                expected_next_player.should_receive(:add_next_frame).and_return(
                     expected_next_frame
                 )
                 game.add_next_frame.should == expected_next_frame
             end
-
         end
     end
 
+
+    describe '#add_frame' do
+        context 'when Game is over' do
+            before do
+                game.stub(:game_over? => true)
+            end
+
+            it 'returns nil' do
+                game.add_frame(:lala => :lalala).should be_nil
+            end
+        end
+        context 'when Game is running' do
+            before do
+                game.stub(:game_over? => false)
+            end
+            context 'when given player is in the game' do
+
+                it 'returns a new Frame by delegating Player#add_frame to the given associated Player' do
+                    frame_params = {:player_id => game.players.first.id}
+                    new_frame = mock('NewFrame')
+                    game.players.first.should_receive(:add_frame).with(
+                        hash_including(frame_params)
+                    ).and_return(new_frame)
+                    game.add_frame(:player_id => game.players.first.id).should == new_frame
+                end
+            end
+            context 'when given player is Not in the game' do
+
+                it 'returns nil' do
+                    game.add_frame(:player_id => :lalala).should be_nil
+                end
+            end
+        end
+    end
 
     describe '#game_over?' do
         it 'returns true when every player has 10 completed frames' do

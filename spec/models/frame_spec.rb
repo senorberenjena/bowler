@@ -11,13 +11,16 @@ describe Frame do
     before(:each) do
         @valid_attributes = {
             :round => 1,
-            :tries => [],
             :player_id => 1
         }
     end
 
     it "can be instantiated" do
         Frame.new.should be_an_instance_of(Frame)
+    end
+
+    it 'has #tries set per default to an empty Array' do
+        Frame.new.tries.should == []
     end
 
     context 'validation' do
@@ -38,8 +41,10 @@ describe Frame do
             Factory.build(:frame, :round => 0).should_not be_valid
         end
 
-        it 'is not valid with tries beeing not an array' do
-            Factory.build(:frame, :tries => 'dings').should_not be_valid
+        it 'raises an error when tries beeing not an array' do
+            expect {
+                Factory.build(:frame, :tries => 'dings').should_not be_valid
+            }.to raise_error
         end
 
         it 'is not valid with a try other than an integer' do
@@ -48,6 +53,23 @@ describe Frame do
 
         it 'is not valid with a try higher than 10' do
             Factory.build(:frame, :tries => [12]).should_not be_valid
+        end
+
+        it 'is not valid with a sum of tries higher than 10 in the first 9 rounds' do
+            Factory.build(:frame, :round => 9, :tries => [3, 8]).should_not be_valid
+        end
+
+        it 'is not valid with more than 2 tries in the first 9 rounds' do
+            Factory.build(:frame, :round => 9, :tries => [2, 2, 3]).should_not be_valid
+        end
+
+        it 'is not valid with more than 2 tries in the last round when its neither a strike nor a spare' do
+            Factory.build(:frame, :round => 10, :tries => [2, 2, 3]).should_not be_valid
+        end
+
+        it 'is valid with 3 tries in the last round, when it\'s a spare or a strike' do
+            Factory.build(:frame, :round => 10, :tries => [10, 10, 3]).should be_valid
+            Factory.build(:frame, :round => 10, :tries => [7, 3, 3]).should be_valid
         end
 
         it 'belongs to a player' do
@@ -67,12 +89,6 @@ describe Frame do
     # Soll vor dem Speichern die Punkte schreiben (nur in Frame?, Game berechnet ondemand?)
 
     describe '#status' do
-        # before do
-        #     [frame, frame_running, frame_open, frame_strike, frame_spare].each do |f|
-        #         f.stub(:completed?)
-        #     end
-        # end
-
         it 'is a running frame, when it is not completed' do
             frame_running.should_receive(:completed?).and_return(false)
             frame_running.status.should == 'running'
@@ -93,28 +109,51 @@ describe Frame do
         end
     end
 
-    #
-    # Scoring
-
-    it 'gives the sum of both balls as its score, when it is an open frame'
+    context 'before it gets saved it' do
+        it 'updates its completed attribute before it gets saved' do
+            frame.should_receive(:completed=)
+            frame.tries = [2,3]
+            frame.save
+        end
+    end
 
     describe '#completed?' do
+        it 'calls check_completed if it is a new record' do
+            frame.should_receive(:new_record?).and_return(true)
+            frame.should_receive(:check_completed)
+            frame.completed?
+        end
+
+        it 'calls check_completed if it is a changed (dirty) record' do
+            frame.should_receive(:changed?).and_return(true)
+            frame.should_receive(:check_completed)
+            frame.completed?
+        end
+
+        it 'reads the completed attribute from the db, when it is not dirty' do
+            frame.should_receive(:changed?).and_return(false)
+            frame.should_receive(:read_attribute).with(:completed)
+            frame.completed?
+        end
+    end
+
+    describe '#check_completed' do
         it 'is completed when it is an open frame' do
             frame.should_receive(:open?).and_return(true)
-            frame.completed?.should be_true
+            frame.check_completed.should be_true
         end
 
         context 'in the first 9 rounds' do
             it 'is completed when it is a strike' do
                 frame_strike.should_receive(:round).and_return(8)
                 frame_strike.should_receive(:strike?).and_return(true)
-                frame_strike.completed?.should be_true
+                frame_strike.check_completed.should be_true
             end
 
             it 'is completed when it is a spare' do
                 frame_spare.should_receive(:round).and_return(6)
                 frame_spare.should_receive(:spare?).and_return(true)
-                frame_spare.completed?.should be_true
+                frame_spare.check_completed.should be_true
             end
         end
 
@@ -123,24 +162,50 @@ describe Frame do
                 frame_strike.tries << 4 << 5
                 frame_strike.should_receive(:round).and_return(10)
                 frame_strike.should_receive(:strike?).and_return(true)
-                frame_strike.completed?.should be_true
+                frame_strike.check_completed.should be_true
             end
 
             it 'is completed when it is a spare and has 3 tries' do
                 frame_spare.tries << 10
                 frame_spare.should_receive(:round).and_return(10)
                 frame_spare.should_receive(:spare?).and_return(true)
-                frame_spare.completed?.should be_true
+                frame_spare.check_completed.should be_true
             end
         end
     end
 
-    describe '#hit!' do
+    describe '#first' do
+        it 'returns the first try if it is set' do
+            frame.should_receive(:tries).and_return([2])
+            frame.first.should == 2
+        end
 
-        it 'does nothing, when the frame is completed already'
+        it 'returns nil when not tries are set yet' do
+            frame.should_receive(:tries).and_return([])
+            frame.first.should be_nil
+        end
+    end
 
-        it 'adds the given number of pins to the tries, when it is still not completed'
+    describe '#second' do
+        it 'returns the second try when it is set' do
+            frame.should_receive(:tries).and_return([2,3])
+            frame.second.should == 3
+        end
 
+        it 'returns nil when no 2nd try is set yet' do
+            frame.should_receive(:tries).and_return([2])
+            frame.second.should be_nil
+        end
+    end
+
+
+    #
+    # Scoring
+    describe '#score' do
+        it 'returns the sum of all tries' do
+            frame_open.tries.should_receive(:sum).and_return(9)
+            frame_open.score.should == 9
+        end
     end
 
 

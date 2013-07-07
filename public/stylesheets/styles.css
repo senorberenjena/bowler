@@ -21,3 +21,44 @@ a:hover { color: #fff; background-color:#000; }
   background-color: red;
   display: inline;
 }
+
+
+.player {
+    float: left;
+    clear: left;
+    background: rgb(243, 243, 243);
+    margin-bottom: 3px;
+    padding: 3px 10px;
+}
+
+.player .scoresheet {
+    float:left;
+}
+
+.player .scoresheet .frame {
+    float:left;
+    border: 1px solid;
+    margin-right: 3px;
+}
+
+.player .scoresheet .frame .tries {
+    float:right;
+}
+
+.player .scoresheet .frame .tries div.first, .player .scoresheet .frame .tries div.second {
+    float: left;
+    border: 1px solid;
+    border-right: 0;
+    border-top: 0;
+    padding: 3px;
+}
+.player .scoresheet .frame .tries div.first {
+
+}
+
+.player .scoresheet .frame .score {
+    float:left;
+    clear:right;
+    width: 3.2em;
+    padding: 0 3px;
+}

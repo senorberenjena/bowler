@@ -1,16 +1,19 @@
 <div class="frame">
     <%- if frame == @current_frame -%>
         <% form_for [@game, @current_frame] do |f| %>
+            <%= f.error_messages %>
+            <%= f.hidden_field :player_id, :value => @current_frame.player_id %>
+            <%= f.hidden_field :round, :value => @current_frame.round %>
             <div class="tries">
-                <%= text_field_tag 'frame[tries][0]', @current_frame.first %>
-                <%= text_field_tag 'frame[tries][1]', @current_frame.second %>
+                <%= text_field_tag 'frame[first]', @current_frame.first, :size => 2, :class => 'first' %>
+                <%= text_field_tag 'frame[second]', @current_frame.second, :size => 2, :class => 'second' %>
             </div>
             <%= f.submit 'next' %>
         <% end %>
     <%- else -%>
         <div class="tries">
-            <div><%= frame.first %></div>
-            <div><%= frame.second %></div>
+            <div class="first"><%= frame.first %></div>
+            <div class="second"><%= frame.second %></div>
         </div>
     <%- end -%>
     <div class="score">

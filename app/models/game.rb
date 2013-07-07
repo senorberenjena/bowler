@@ -8,18 +8,27 @@ class Game < ActiveRecord::Base
     validates_presence_of :title
     validate :must_have_one_player
 
+    def game_over?
+        return frames.completed.count == players.count * 10
+    end
+
     def next_player
         return @next_player ||= (game_over? ? nil : players[next_player_index])
     end
 
     def add_next_frame
         unless game_over?
-            return @next_frame ||= next_player.add_frame()
+            return @next_frame ||= next_player.add_next_frame()
         end
     end
 
-    def game_over?
-        return frames.completed.count == players.count * 10
+    def add_frame(frame_params)
+        unless game_over?
+            player = players.select do |p|
+                frame_params[:player_id] && p.id == frame_params[:player_id].to_i
+            end.first
+            return player.add_frame(frame_params) if player
+        end
     end
 
     private

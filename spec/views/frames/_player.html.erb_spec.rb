@@ -16,7 +16,7 @@ describe 'frames/_player.html.erb' do
 
     it 'renders a scoresheet of the player' do
         render :locals => {:player => @player}
-        response.should have_tag 'div[id=?]', @player.id do
+        response.should have_tag 'div[id=?]', "player_#{@player.id}" do
             with_tag 'div[class=?]', 'name', @player.name
             with_tag 'div[class=?]', 'scoresheet'
         end

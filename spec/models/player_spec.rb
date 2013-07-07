@@ -29,8 +29,7 @@ describe Player do
     end
 
 
-
-    describe '#add_frame' do
+    describe '#add_next_frame' do
         before do
             player.stub(:next_round)
             player.game.stub(:game_over?).and_return(false)
@@ -38,31 +37,65 @@ describe Player do
 
         it 'returns nil, when Game is over' do
             player.game.should_receive(:game_over?).and_return(true)
-            player.add_frame.should == nil
+            player.add_next_frame.should == nil
         end
 
         it 'creates and returns a new frame for the player' do
             new_frame = Factory.build(:frame)
             Frame.should_receive(:new).and_return(new_frame)
-            player.add_frame.should == new_frame
+            player.add_next_frame.should == new_frame
         end
 
         it 'increments the round of the frame each time it is called' do
             player.should_receive(:next_round).and_return(4)
-            player.add_frame.round.should == 4
+            player.add_next_frame.round.should == 4
         end
 
         it 'associates the Frame with the Player' do
-            player.add_frame.player.should == player
+            player.add_next_frame.player.should == player
         end
 
         it 'associates the Player with the Frames' do
-            player.frames.should include(player.add_frame)
+            player.frames.should include(player.add_next_frame)
         end
 
     end
 
 
+    describe '#add_frame' do
+        before do
+            player.game.stub(:game_over?).and_return(false)
+        end
+
+        it 'returns nil, when Game is over' do
+            player.game.should_receive(:game_over?).and_return(true)
+            player.add_frame(:lala => :lalala).should == nil
+        end
+
+        it 'creates and returns a new frame for the player' do
+            new_frame = Factory.build(:frame)
+            Frame.should_receive(:new).with(
+                hash_including(:round => 6)
+            ).and_return(new_frame)
+            player.add_frame(:round => 6).should == new_frame
+        end
+
+        it 'sets the given tries on the newly created Frame' do
+            new_frame = Factory.build(:frame)
+            Frame.stub(:new => new_frame)
+            new_frame.should_receive(:first=).with('4')
+            new_frame.should_receive(:second=).with('1')
+            player.add_frame(:first => '4', :second => '1')
+        end
+
+        it 'associates the Frame with the Player' do
+            player.add_frame(:round => 2).player.should == player
+        end
+
+        it 'associates the Player with the Frames' do
+            player.frames.should include(player.add_frame(:round => 3))
+        end
+    end
 
     describe '#next_round' do
         before do
