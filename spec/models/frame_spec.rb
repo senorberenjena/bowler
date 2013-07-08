@@ -3,10 +3,10 @@ require 'spec_helper'
 describe Frame do
 
     let (:frame) {Factory(:frame)}
-    let (:frame_running) {Factory(:frame, :running)}
-    let (:frame_open) {Factory(:frame, :open)}
-    let (:frame_strike) {Factory(:frame, :strike)}
-    let (:frame_spare) {Factory(:frame, :spare)}
+    let (:frame_running) {Factory(:frame, :tries => [3])}
+    let (:frame_open) {Factory(:frame, :tries => [3, 6])}
+    let (:frame_strike) {Factory(:frame, :tries => [10])}
+    let (:frame_spare) {Factory(:frame, :tries => [3, 7])}
 
     before(:each) do
         @valid_attributes = {
@@ -180,9 +180,9 @@ describe Frame do
             frame.first.should == 2
         end
 
-        it 'returns \'-\' when not tries are set yet' do
+        it 'returns nil when not tries are set yet' do
             frame.should_receive(:tries).and_return([])
-            frame.first.should == '-'
+            frame.first.should == nil
         end
     end
 
@@ -192,9 +192,21 @@ describe Frame do
             frame.second.should == 3
         end
 
-        it 'returns \'-\' when no 2nd try is set yet' do
+        it 'returns nil when no 2nd try is set yet' do
             frame.should_receive(:tries).and_return([2])
-            frame.second.should == '-'
+            frame.second.should == nil
+        end
+    end
+
+    describe '#third' do
+        it 'returns the third try when it is set' do
+            frame.should_receive(:tries).and_return([3,7,10])
+            frame.third.should == 10
+        end
+
+        it 'returns nil when no 3rd try is set yet' do
+            frame.should_receive(:tries).and_return([2,8])
+            frame.third.should == nil
         end
     end
 

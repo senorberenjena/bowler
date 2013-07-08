@@ -45,21 +45,20 @@ a:hover { color: #fff; background-color:#000; }
     float:right;
 }
 
-.player .scoresheet .frame .tries div.first, .player .scoresheet .frame .tries div.second {
+.player .scoresheet .frame .tries div.first,
+.player .scoresheet .frame .tries div.second,
+.player .scoresheet .frame .tries div.third {
     float: left;
     border: 1px solid;
     border-right: 0;
     border-top: 0;
     padding: 3px;
 }
-.player .scoresheet .frame .tries div.first {
-
-}
 
 .player .scoresheet .frame .score {
     float:left;
     clear:right;
-    width: 3.2em;
+    width: 3.8em;
     padding: 0 3px;
 }
 

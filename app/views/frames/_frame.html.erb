@@ -5,18 +5,24 @@
             <%= f.hidden_field :player_id, :value => @current_frame.player_id %>
             <%= f.hidden_field :round, :value => @current_frame.round %>
             <div class="tries">
-                <%= text_field_tag 'frame[first]', @current_frame.first, :size => 2, :class => 'first' %>
+                <%= text_field_tag 'frame[first]', @current_frame.first, :size => 2, :class => 'first', :autofocus => true %>
                 <%= text_field_tag 'frame[second]', @current_frame.second, :size => 2, :class => 'second' %>
+                <%- if frame.round == 10 && (frame.strike? || frame.spare?) -%>
+                    <%= text_field_tag 'frame[third]', @current_frame.third, :size => 2, :class => 'third' %>
+                <%- end -%>
             </div>
             <%= f.submit 'next' %>
         <% end %>
     <%- else -%>
         <div class="tries">
-            <div class="first"><%= frame.first %></div>
-            <div class="second"><%= frame.second %></div>
+            <div class="first"><%= render_first_try(frame) %></div>
+            <div class="second"><%= render_second_try(frame) %></div>
+            <%- if frame.round == 10 && (frame.strike? || frame.spare?) -%>
+                <div class="third"><%= frame.third %></div>
+            <%- end -%>
         </div>
     <%- end -%>
     <div class="score">
-        <%= frame.score %>
+        <%= frame.summarized_score %>
     </div>
 </div>

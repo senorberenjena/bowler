@@ -21,18 +21,22 @@ describe 'frames/_frame.html.erb' do
     context 'when the @current_frame is not displayed' do
 
         before do
-            @frame.should_receive(:first).and_return 0
-            @frame.should_receive(:second).and_return 5
+            @frame.stub(:first => 0)
+            @frame.stub(:second => 5)
         end
 
         it 'renders the result of the 2 possible tries of the frame' do
+            template.should_receive(:render_first_try)
+            template.should_receive(:render_second_try)
             render :locals => {:frame => @frame}
 
             response.should have_tag 'div[class=?]', 'tries' do
-                with_tag 'div', /0/
-                with_tag 'div', /5/
+                with_tag 'div'
+                with_tag 'div'
             end
         end
+
+        it 'renders the result of the 3 tries of the frame, when it\'s a strike or spare in 10th round'
 
         it 'renders no submit button' do
             render :locals => {:frame => @frame}
@@ -90,7 +94,7 @@ describe 'frames/_frame.html.erb' do
     end
 
     it 'renders a field for the current score of the frame' do
-        @frame.stub(:score => '120')
+        @frame.should_receive(:summarized_score).and_return(120)
         render :locals => {:frame => @frame}
 
         response.should have_tag 'div[class=?]', 'score', /120/

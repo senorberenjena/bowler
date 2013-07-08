@@ -44,7 +44,7 @@ class Frame < ActiveRecord::Base
     end
 
     def first
-        self.tries.first || '-'
+        self.tries.first
     end
 
     def first=(value)
@@ -52,16 +52,55 @@ class Frame < ActiveRecord::Base
     end
 
     def second
-        self.tries[1] || '-'
+        self.tries[1]
     end
 
     def second=(value)
         self.tries[1] = value.to_i unless self.strike? && self.round < 10
     end
 
-    # TODO: wird berechnet mit extra score bei spare/strike
+    def third
+        self.tries[2]
+    end
+
+    def third=(value)
+        self.tries[2] = value.to_i
+    end
+
+    # TODO: spec & aufräumen
     def score
-        self.tries.sum if self.tries.any?
+        if self.completed?
+            result = self.tries.sum
+            if (self.strike?)
+                result += next_frame.tries.first if (next_frame && next_frame.completed?)
+                if (next_frame && next_frame.open?)
+                    result += next_frame.tries.second
+                elsif (next_frame && next_frame.strike? && next_frame.next_frame && next_frame.next_frame.completed?)
+                    result += next_frame.next_frame.tries.first
+                elsif (next_frame && next_frame.strike? && next_frame.round == 10)
+                    result += next_frame.tries.second
+                end
+            elsif (self.spare?)
+                result += next_frame.tries.first if (next_frame && next_frame.completed?)
+            end
+            return result
+        end
+    end
+
+    # TODO: spec!
+    def summarized_score
+        previous_score = previous_frames.inject(0){|sum,f| sum += f.score}
+        previous_score += score if (self.completed?)
+    end
+
+    # TODO: spec!
+    def next_frame
+        @next_frame ||= Frame.find(:first, :conditions => {:player_id => player.id, :round => round + 1})
+    end
+
+    # TODO: spec!
+    def previous_frames
+        @previous_frames ||= Frame.find(:all, :conditions => ['player_id=? AND round <?', player.id, round])
     end
 
     private
