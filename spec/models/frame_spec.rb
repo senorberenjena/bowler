@@ -180,9 +180,9 @@ describe Frame do
             frame.first.should == 2
         end
 
-        it 'returns nil when not tries are set yet' do
+        it 'returns \'-\' when not tries are set yet' do
             frame.should_receive(:tries).and_return([])
-            frame.first.should be_nil
+            frame.first.should == '-'
         end
     end
 
@@ -192,9 +192,9 @@ describe Frame do
             frame.second.should == 3
         end
 
-        it 'returns nil when no 2nd try is set yet' do
+        it 'returns \'-\' when no 2nd try is set yet' do
             frame.should_receive(:tries).and_return([2])
-            frame.second.should be_nil
+            frame.second.should == '-'
         end
     end
 

@@ -7,5 +7,8 @@
     <body>
         <h1><%= @title %></h1>
         <%= yield %>
+        <div class='nav'>
+            <%= link_to 'All Games', games_path %>
+        </div>
     </body>
 </html>

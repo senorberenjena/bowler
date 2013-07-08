@@ -24,7 +24,7 @@ describe 'frames/_player.html.erb' do
 
     it 'renders the partial _frame.html.erb for all past frames of the player' do
         @player.stub(:frames => [mock_model(Frame), mock_model(Frame)])
-        template.should_receive(:render).with({:partial => 'frame', :collection => @player.frames})
+        template.should_receive(:render).with({:partial => '/frames/frame', :collection => @player.frames})
         render :locals => {:player => @player}
     end
 

@@ -2,9 +2,13 @@ class FramesController < ApplicationController
 
     def new
         @game = Game.find(params[:game_id])
-        @title = "Play Game"
-        @current_frame = @game.add_next_frame
-        render :action => :edit
+        unless @game.game_over?
+            @title = "Play Game"
+            @current_frame = @game.add_next_frame
+            render :action => :edit
+        else
+            redirect_to game_path(@game)
+        end
     end
 
     def create

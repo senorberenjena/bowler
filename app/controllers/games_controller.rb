@@ -20,4 +20,13 @@ class GamesController < ApplicationController
         end
     end
 
+    def show
+        @game = Game.find(params[:id])
+        if @game.game_over?
+            @title = 'Results'
+        else
+            redirect_to new_game_frame_path(@game)
+        end
+    end
+
 end

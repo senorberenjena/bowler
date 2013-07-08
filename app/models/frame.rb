@@ -44,7 +44,7 @@ class Frame < ActiveRecord::Base
     end
 
     def first
-        self.tries.first
+        self.tries.first || '-'
     end
 
     def first=(value)
@@ -52,11 +52,11 @@ class Frame < ActiveRecord::Base
     end
 
     def second
-        self.tries[1]
+        self.tries[1] || '-'
     end
 
     def second=(value)
-        self.tries[1] = value.to_i
+        self.tries[1] = value.to_i unless self.strike? && self.round < 10
     end
 
     # TODO: wird berechnet mit extra score bei spare/strike

@@ -21,20 +21,38 @@ describe FramesController do
             assigns[:game].should == game
         end
 
-        it 'asks the game for the next frame' do
-            game.should_receive(:add_next_frame).and_return(new_frame)
-            get :new, :game_id => 1
+        context 'when Game is running' do
+            before do
+                game.stub(:game_over? => false)
+            end
+
+            it 'asks the game for the next frame' do
+                game.should_receive(:add_next_frame).and_return(new_frame)
+                get :new, :game_id => 1
+            end
+
+            it 'assigns @current_frame' do
+                get :new, :game_id => 1
+                assigns[:current_frame].should == new_frame
+            end
+
+            it 'renders the edit template' do
+                get :new, :game_id => 1
+                response.should render_template(:edit)
+            end
         end
 
-        it 'assigns @current_frame' do
-            get :new, :game_id => 1
-            assigns[:current_frame].should == new_frame
+        context 'when Game is over' do
+            before do
+                game.stub(:game_over? => true)
+            end
+
+            it 'redirects to Game show path' do
+                get :new, :game_id => 1
+                response.should redirect_to(game_path(game))
+            end
         end
 
-        it 'renders the edit template' do
-            get :new, :game_id => 1
-            response.should render_template(:edit)
-        end
     end
 
     describe 'POST create (/games/<Game>/frames)' do

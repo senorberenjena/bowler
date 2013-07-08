@@ -1,5 +1,4 @@
 <h2><%= @game.title %></h2>
-<h3>Round <%= @current_frame.round %></h3>
 <div id='players'>
     <%= render :partial => '/frames/player', :collection => @game.players %>
 </div>

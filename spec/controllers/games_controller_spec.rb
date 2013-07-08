@@ -26,7 +26,7 @@ describe GamesController do
         end
     end
 
-    describe 'GET new (/photos/new)' do
+    describe 'GET new (/games/new)' do
         let(:game) {mock_model(Game).as_new_record.as_null_object}
 
         before do
@@ -111,6 +111,47 @@ describe GamesController do
                 response.should render_template('new')
             end
 
+        end
+    end
+
+
+    describe 'GET show (/games/<Game>)' do
+        let(:game) {mock_model(Game).as_null_object}
+
+        before do
+            Game.stub(:find).and_return(game)
+        end
+
+        it 'finds the given Game' do
+            Game.should_receive(:find).with('1').and_return(game)
+            get :show, :id => 1
+        end
+
+        it 'assigns @game' do
+            get :show, :id => 1
+            assigns[:game].should == game
+        end
+
+        context 'when game is over' do
+            before do
+                game.stub(:game_over? => true)
+            end
+
+            it 'renders the show template' do
+                get :show, :id => 1
+                response.should render_template('show')
+            end
+        end
+
+        context 'when game is running' do
+            before do
+                game.stub(:game_over? => false)
+            end
+
+            it 'redirects to Frames new  page' do
+                get :show, :id => 1
+                response.should redirect_to(new_game_frame_path(game))
+            end
         end
     end
 
