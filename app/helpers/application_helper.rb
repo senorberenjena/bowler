@@ -8,4 +8,9 @@ module ApplicationHelper
         frame.strike? ? (frame.round < 10 ? '&nbsp;' : frame.second) :
             (frame.spare? ? '/' : frame.second)
     end
+
+    def render_quote
+        q = Quote.random
+        content_tag :span, "What the Dude says: #{q.quote}" if q
+    end
 end
