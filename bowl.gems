@@ -1,0 +1,22 @@
+# bowl.gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
+
+actionmailer -v2.3.18
+actionpack -v2.3.18
+activerecord -v2.3.18
+activeresource -v2.3.18
+activesupport -v2.3.18
+columnize -v0.3.6
+factory_girl -v2.6.4
+i18n -v0.6.1
+linecache -v0.46
+mini_portile -v0.5.0
+multi_json -v1.7.7
+rack -v1.1.6
+rails -v2.3.18
+rbx-require-relative -v0.0.9
+rspec -v1.3.2
+rspec-rails -v1.3.4
+ruby-debug -v0.10.4
+ruby-debug-base -v0.10.4
+sqlite3 -v1.3.7
+sqlite3-ruby -v1.3.3
